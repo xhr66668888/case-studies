@@ -1,0 +1,35 @@
+Haoran Xu
+hx666
+
+
+New model (8 → 12 → 6 → 1) results:
+Train (MPa): MSE=45.881 | MAE=5.266 | R2=0.837
+Test (MPa): MSE=50.559 | MAE=5.474 | R2=0.813
+Baseline (8 → 5 → 1) results:
+Train (MPa): MSE=45.899 | MAE=5.267 | R2=0.837
+Test (MPa): MSE=50.602 | MAE=5.475 | R2=0.813
+
+So new model is a little better on test MSE/MAE, but improvement is very small. R2 is basically same.
+
+
+I think performance only changed a little because both models already fit this dataset reasonably well.
+The bigger model has more capacity, so it can learn slightly more complex patterns.
+But this dataset is not huge, so adding layers does not always give big gain.
+This result shows no clear overfitting problem, and generalization is almost same as baseline.
+
+
+Part A: Test Evaluation
+Classification report (test): accuracy = 0.983, macro F1 = 0.978, weighted F1 = 0.983.
+Confusion matrix counts are:
+[[123, 1, 0],
+[1, 135, 0],
+[0, 3, 37]]
+Compare to Traditional ML
+Compared to last week (best test F1 around 0.92), this week DNN is better.
+Now weighted F1 is 0.983, so improvement is clear.
+
+
+DNN can perform better because it learns nonlinear interactions between features, not only simple boundaries.
+It also has higher model capacity, so it can capture more complex storm patterns.
+But if data is smaller, DNN can overfit, so regularization and validation are still important.
+
