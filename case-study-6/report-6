@@ -1,0 +1,62 @@
+Haoran Xu
+hx666
+
+
+1.
+Total variance = 5 + 3 + 2 + 1 + 1 = 12
+d=1: 5/12 = 0.417, not enough
+d=2: (5+3)/12 = 8/12 = 0.667, still not enough
+d=3: (5+3+2)/12 = 10/12 = 0.833 >= 0.80
+So smallest d is 3.
+
+V_3 = [v1 v2 v3], so z = V_3^T * x
+Since v1=[1,0,0,0,0], v2=[0,1,0,0,0], v3=[0,0,1,0,0], we just take first 3 element of x.
+z = [2, -1, 3]^T
+
+
+2.
+phi(x)^T phi(z) = 1*1 + sqrt(2)*x1*sqrt(2)*z1 + sqrt(2)*x2*sqrt(2)*z2 + x1^2*z1^2 + sqrt(2)*x1*x2*sqrt(2)*z1*z2 + x2^2*z2^2
+= 1 + 2*x1*z1 + 2*x2*z2 + x1^2*z1^2 + 2*x1*x2*z1*z2 + x2^2*z2^2
+
+k_tilde(x,z) = (x^T z + 1)^2 = (x1*z1 + x2*z2 + 1)^2
+Expand: = (x1*z1)^2 + (x2*z2)^2 + 1 + 2*x1*z1*x2*z2 + 2*x1*z1 + 2*x2*z2
+= 1 + 2*x1*z1 + 2*x2*z2 + x1^2*z1^2 + 2*x1*x2*z1*z2 + x2^2*z2^2
+
+The two expression are exactly same. So yes, this kernel definition correctly demonstrate the kernel trick. The high-dimensional dot product phi(x)^T phi(z) can be compute using the low-dimensional expression (x^T z + 1)^2. We dont need to actually compute phi, just use the simple formula.
+
+
+3.
+Pipeline results:
+LR (unscaled, 13D):              Train acc = 0.992, Test acc = 0.963
+PCA(2) unscaled -> LR:           Train acc = 0.702, Test acc = 0.685
+StandardScaler -> PCA(2) -> LR:  Train acc = 0.976, Test acc = 0.944
+
+Yes feature scaling matter a lot for PCA. PCA finds direction of maximum variance. If one feature has much larger scale (like proline which range is 0-1700), it will dominate the principal component. Other feature with small range basically get ignored. After scaling, all feature contribute more equally to variance, so PCA can find more meaningful direction.
+
+
+From the PCA(2) plots, Standard scaler and Robust scaler both give good class separability. The three class are clearly separated in the 2D space with minimal overlap. Min-Max is ok but slightly worse. No scaling is worst because proline dominate everything.
+I think Standard scaler is most suitable here. The test accuracy with StandardScaler -> PCA(2) -> LR is 0.944, which is much higher than unscaled PCA (0.685). Also in the plot, three classes form distinct cluster with clear boundary between them.
+
+(see screenshot: q3_pca_scaling_comparison.png)
+
+
+4.
+From the plot, gamma=0.1 give the best 2D class separability. Three classes are clearly separated into different region. Class 1, 2, 3 each form their own cluster with good spacing between them.
+
+When gamma increase to 0.5 or 1.0, the points start to collapse together. At gamma=1, almost all point are squeeze into a very small area and classes overlap badly. This is because larger gamma means the RBF kernel is more sensitive, so only very close point have high similarity. The embedding lose global structure and everything shrink to center.
+
+So smaller gamma preserve more global structure and give better separation for this dataset.
+
+(see screenshot: q4_kernel_pca_gamma.png)
+
+
+5.
+From the 3x3 grid plot, I think n_neighbors=15 with min_dist=0.1 give best class separability. The three class form tight, well-separated cluster with almost no overlap.
+
+When n_neighbors is small (like 5), the embedding focus more on local structure, so cluster can be more scattered or fragmented. When n_neighbors increase, UMAP consider more global structure and cluster become more coherent.
+
+When min_dist is small (0.1), points within same class pack tightly together, which make cluster more compact and easy to distinguish. When min_dist increase to 1.0, points spread out more and boundary between class become less clear.
+
+So larger n_neighbors + smaller min_dist is generally better for class separation in this dataset.
+
+(see screenshot: q5_umap_grid.png)
